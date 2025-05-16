@@ -2,6 +2,9 @@ from PIL import Image
 from pathlib import Path
 
 
+alpha_extensions_list = [".png", ".tiff"]
+
+
 def convert_image_file(input_path: Path, save_path: Path, size_limit: tuple):
     # 値の初期化
     img = Image.open(input_path)
@@ -26,9 +29,10 @@ def convert_image_file(input_path: Path, save_path: Path, size_limit: tuple):
         resize_required = True
         new_size = (int(img.width * (height_limit / img.height)), height_limit)
 
-    # アルファチャンネルを含むPNG形式への対処
-    if input_path.suffix == ".png" and save_path.suffix != ".png":
-        img = img.convert('RGB')
+    # アルファチャンネルを含む画像形式への対処
+    if input_path.suffix in alpha_extensions_list \
+            and save_path.suffix not in alpha_extensions_list:
+        img = img.convert("RGB")
 
     # リサイズ・変換・保存処理
     if resize_required:

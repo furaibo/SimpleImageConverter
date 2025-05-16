@@ -2,7 +2,7 @@ import time
 import flet as ft
 from pathlib import Path
 from flet.core.file_picker import FilePickerFileType
-from flet.core.textfield import KeyboardType
+from flet.core.textfield import NumbersOnlyInputFilter
 
 from image import convert_image_file
 
@@ -11,6 +11,7 @@ from image import convert_image_file
 def main(page: ft.Page):
     # タイトル設定
     page.title = "シンプル画像変換"
+    page.appbar = ft.AppBar(title=ft.Text("シンプル画像変換"))
 
     # サイズ指定
     page.window.width = 1000
@@ -64,8 +65,7 @@ def main(page: ft.Page):
                 break
 
     def event_get_directory_result(e: ft.FilePickerResultEvent):
-        if e.files:
-            print(e.path)
+        if e.path:
             text_field_save_path.value = e.path
             text_field_save_path.update()
         else:
@@ -180,16 +180,14 @@ def main(page: ft.Page):
         read_only=True
     )
     text_field_size_limit_width = ft.TextField(
-        label="幅",
-        width=120,
-        value="1280",
-        keyboard_type=KeyboardType.NUMBER
+        label="幅", width=120, value="1280",
+        input_filter=NumbersOnlyInputFilter()
     )
     text_field_size_limit_height = ft.TextField(
         label="高さ",
         width=120,
         value="800",
-        keyboard_type=KeyboardType.NUMBER
+        input_filter=NumbersOnlyInputFilter()
     )
     text_field_file_name_prefix = ft.TextField(
         label="接頭辞の文字列",
@@ -252,6 +250,7 @@ def main(page: ft.Page):
     drop_down_image_ext = ft.Dropdown(
         label="拡張子選択",
         width=270,
+        value="jpg",
         editable=False,
         options=dropdown_options,
         on_change=lambda _: event_check_start_button_enabled()
@@ -281,6 +280,9 @@ def main(page: ft.Page):
     #
     # 行の定義
     #
+
+    row_spacer_large = ft.Row(controls=[ft.Divider(height=20)])
+    row_spacer_small = ft.Row(controls=[ft.Divider(height=10)])
 
     row_save_path = ft.Row(
         controls=[
@@ -312,7 +314,7 @@ def main(page: ft.Page):
             checkbox_cancel_file_name_prefix
         ]
     )
-    row_input_files_header = ft.Row(
+    row_input_files_selector = ft.Row(
         controls=[
             ft.Text("ファイル選択", width=80),
             button_add_input_files,
@@ -334,13 +336,16 @@ def main(page: ft.Page):
 
     # ページへのタブ定義追加
     page.add(
-        ft.Divider(),  # 横線
+        row_spacer_large,
         row_save_path,
         row_image_ext,
         row_image_size,
         row_file_name_prefix,
-        row_input_files_header,
+        row_spacer_small,
+        row_input_files_selector,
+        row_spacer_small,
         row_input_files_list,
+        row_spacer_small,
         row_image_conversion_start_button
     )
 
