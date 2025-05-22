@@ -83,8 +83,9 @@ def main(page: ft.Page):
                         ft.DataCell(ft.Text(f.size)),
                         ft.DataCell(ft.OutlinedButton(
                             text="削除",
-                            data=f.path,   # ファイルパスをdataの値として保持
-                            on_click=lambda e: event_remove_input_file(e)))
+                            data=f.path,    # ファイルパスを値として保持
+                            on_click=lambda e2:
+                                event_remove_input_file(e2)))
                     ]
                 )
                 data_table_input_files.rows.append(row)
@@ -98,12 +99,14 @@ def main(page: ft.Page):
 
     def event_check_start_button_enabled():
         # 各入力の状態チェック
+        selected_ext = drop_down_image_ext.value
         ext_disabled = checkbox_cancel_ext_convert.value
-        ext_allowed = (drop_down_image_ext.value in allowed_extensions_list)
+        ext_allowed = selected_ext in allowed_extensions_list
         file_not_empty = len(data_table_input_files.rows) > 0
 
         # 論理計算
-        button_enabled = (ext_disabled or ext_allowed) and file_not_empty
+        button_enabled = (
+                (ext_disabled or ext_allowed) and file_not_empty)
         button_image_conversion_start.disabled = not button_enabled
         button_image_conversion_start.update()
 
@@ -133,7 +136,8 @@ def main(page: ft.Page):
                 file_name = prefix + file_name
 
             # ファイル保存パスの取得
-            save_path = save_dir_path.joinpath(file_name).with_suffix("." + save_ext)
+            save_path = (save_dir_path.joinpath(file_name).
+                         with_suffix("." + save_ext))
 
             # リサイズ時のリミットを取得
             size_limit = (
@@ -167,8 +171,10 @@ def main(page: ft.Page):
 
     # FilePicker定義
     # Note: appendによるpage追加がないとエラー発生
-    get_directory_dialog = ft.FilePicker(on_result=event_get_directory_result)
-    get_input_files_dialog = ft.FilePicker(on_result=event_get_input_files_result)
+    get_directory_dialog = ft.FilePicker(
+        on_result=event_get_directory_result)
+    get_input_files_dialog = ft.FilePicker(
+        on_result=event_get_input_files_result)
     page.overlay.append(get_directory_dialog)
     page.overlay.append(get_input_files_dialog)
 
@@ -199,17 +205,20 @@ def main(page: ft.Page):
     checkbox_cancel_ext_convert = ft.Checkbox(
         label="画像の拡張子変換をしない",
         value=False,
-        on_change=lambda e: event_switch_convert_ext_disabled(e.control.value)
+        on_change=lambda e:
+            event_switch_convert_ext_disabled(e.control.value)
     )
     checkbox_cancel_size_convert = ft.Checkbox(
         label="画像サイズの制限をしない",
         value=False,
-        on_change=lambda e: event_switch_size_limit_disabled(e.control.value)
+        on_change=lambda e:
+            event_switch_size_limit_disabled(e.control.value)
     )
     checkbox_cancel_file_name_prefix = ft.Checkbox(
         label="ファイル名に接頭辞を追加しない",
         value=False,
-        on_change=lambda e: event_switch_file_name_prefix_disabled(e.control.value)
+        on_change=lambda e:
+            event_switch_file_name_prefix_disabled(e.control.value)
     )
 
     # フォルダ選択ボタン
@@ -218,18 +227,19 @@ def main(page: ft.Page):
         width=120,
         icon=ft.Icons.FOLDER,
         disabled=page.web,
-        on_click=lambda _: get_directory_dialog.get_directory_path(
-            initial_directory=str(save_dir_path))
+        on_click=lambda _:
+            get_directory_dialog.get_directory_path(
+                initial_directory=str(save_dir_path))
     )
     button_add_input_files = ft.FilledButton(
         text="入力ファイル追加",
         width=150,
         icon=ft.Icons.UPLOAD_FILE,
-        on_click=lambda _: get_input_files_dialog.pick_files(
-            file_type=FilePickerFileType.CUSTOM,
-            allowed_extensions=allowed_extensions_list,
-            allow_multiple=True,
-        ),
+        on_click=lambda _:
+            get_input_files_dialog.pick_files(
+                file_type=FilePickerFileType.CUSTOM,
+                allowed_extensions=allowed_extensions_list,
+                allow_multiple=True)
     )
     button_image_conversion_start = ft.CupertinoFilledButton(
         text="画像変換処理開始",

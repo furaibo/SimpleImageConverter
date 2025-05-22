@@ -21,13 +21,22 @@ def convert_image_file(input_path: Path, save_path: Path, size_limit: tuple):
         width_ratio = width_limit / img.width
         height_ratio = height_limit / img.height
         shrink_ratio = min(width_ratio, height_ratio)
-        new_size = (int(img.width * shrink_ratio), int(img.height * shrink_ratio))
+        new_size = (
+            int(img.width * shrink_ratio),
+            int(img.height * shrink_ratio)
+        )
     elif img.width > width_limit:
         resize_required = True,
-        new_size = (width_limit, int(img.height * (width_limit / img.width)))
+        new_size = (
+            width_limit,
+            int(img.height * (width_limit / img.width))
+        )
     elif img.height > height_limit:
         resize_required = True
-        new_size = (int(img.width * (height_limit / img.height)), height_limit)
+        new_size = (
+            int(img.width * (height_limit / img.height)),
+            height_limit
+        )
 
     # アルファチャンネルを含む画像形式への対処
     if input_path.suffix in alpha_extensions_list \
